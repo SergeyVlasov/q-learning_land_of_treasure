@@ -5,23 +5,23 @@ import time
 numpy.random.seed(2)
  
  
-N_STATES = 10                    #размер острова
-FIRST_STATE = 5                 #откуда начинаем гулять
+N_Stapes = 10                    #Г°Г Г§Г¬ГҐГ° Г®Г±ГІГ°Г®ГўГ 
+FIRST_STATE = 5                 #Г®ГІГЄГіГ¤Г  Г­Г Г·ГЁГ­Г ГҐГ¬ ГЈГіГ«ГїГІГј
 ACTIONS = ['left', 'right']
-EPSILON = 0.7                     # порог принятия решения как выбрать действие
-ALPHA = 0.3                         # леарнинг рэйт
-GAMMA = 0.8                       # дисконтирующий фактор
-MAX_EPISODES = 10             # число эпизодов (эпизод это когда достигли пропасти или сокровища
-FRESH_TIME = 0.05                # скорость перерисовки
+EPSILON = 0.7                     # ГЇГ®Г°Г®ГЈ ГЇГ°ГЁГ­ГїГІГЁГї Г°ГҐГёГҐГ­ГЁГї ГЄГ ГЄ ГўГ»ГЎГ°Г ГІГј Г¤ГҐГ©Г±ГІГўГЁГҐ
+ALPHA = 0.3                         # Г«ГҐГ Г°Г­ГЁГ­ГЈ Г°ГЅГ©ГІ
+GAMMA = 0.8                       # Г¤ГЁГ±ГЄГ®Г­ГІГЁГ°ГіГѕГ№ГЁГ© ГґГ ГЄГІГ®Г°
+MAX_EPISODES = 10             # Г·ГЁГ±Г«Г® ГЅГЇГЁГ§Г®Г¤Г®Гў (ГЅГЇГЁГ§Г®Г¤ ГЅГІГ® ГЄГ®ГЈГ¤Г  Г¤Г®Г±ГІГЁГЈГ«ГЁ ГЇГ°Г®ГЇГ Г±ГІГЁ ГЁГ«ГЁ Г±Г®ГЄГ°Г®ГўГЁГ№Г 
+FRESH_TIME = 0.05                # Г±ГЄГ®Г°Г®Г±ГІГј ГЇГҐГ°ГҐГ°ГЁГ±Г®ГўГЄГЁ
 FRESH_TIME_EPIS = 1
  
  
-def build_q_table(n_states, actions):     # собственно Q- таблица
+def build_q_table(n_states, actions):     # Г±Г®ГЎГ±ГІГўГҐГ­Г­Г® Q- ГІГ ГЎГ«ГЁГ¶Г 
     table = pandas.DataFrame(numpy.zeros((n_states, len(actions))), columns=actions,)
     return table
  
  
-def choose_action(state, q_table):             # выбор действия, используем эпсилон-greedy policy то есть с вероятностью эпсилон выберем действие с большей ценностью
+def choose_action(state, q_table):             # ГўГ»ГЎГ®Г° Г¤ГҐГ©Г±ГІГўГЁГї, ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГ¬ ГЅГЇГ±ГЁГ«Г®Г­-greedy policy ГІГ® ГҐГ±ГІГј Г± ГўГҐГ°Г®ГїГІГ­Г®Г±ГІГјГѕ ГЅГЇГ±ГЁГ«Г®Г­ ГўГ»ГЎГҐГ°ГҐГ¬ Г¤ГҐГ©Г±ГІГўГЁГҐ Г± ГЎГ®Г«ГјГёГҐГ© Г¶ГҐГ­Г­Г®Г±ГІГјГѕ
     state_actions = q_table.iloc[state, :]
     if (numpy.random.uniform() > EPSILON) or (state_actions.all() == 0):
         action_name = numpy.random.choice(ACTIONS)
@@ -30,11 +30,11 @@ def choose_action(state, q_table):             # выбор действия, используем эпси
     return action_name
  
  
-def get_env_feedback(S, A):  # Награда
+def get_env_feedback(S, A):  # ГЌГ ГЈГ°Г Г¤Г 
     if A == 'right':
-        if S == N_STATES-1:
+        if S == N_Stapes-1:
             S_ = 'terminal'
-            R = 1    # награда в сокровище
+            R = 1    # Г­Г ГЈГ°Г Г¤Г  Гў Г±Г®ГЄГ°Г®ГўГЁГ№ГҐ
         else:
             S_ = S + 1
             R = 0
@@ -42,7 +42,7 @@ def get_env_feedback(S, A):  # Награда
        # R = 0
         if S == 0:
             S_ = 'abyss'
-            R = -1   # награда в пропасти
+            R = -1   # Г­Г ГЈГ°Г Г¤Г  Гў ГЇГ°Г®ГЇГ Г±ГІГЁ
  
         else:
             S_ = S - 1
@@ -50,8 +50,8 @@ def get_env_feedback(S, A):  # Награда
     return S_, R
  
  
-def update_enviroment(S, episode, step_counter):   # перерисовка "острова"
-    env_list = ['abyss:']+['-']*(N_STATES-2) + [':treasure']
+def update_enviroment(S, episode, step_counter):   # ГЇГҐГ°ГҐГ°ГЁГ±Г®ГўГЄГ  "Г®Г±ГІГ°Г®ГўГ "
+    env_list = ['abyss:']+['-']*(N_Stapes-2) + [':treasure']
     if S == 'terminal' or S == 'abyss':
         interaction = 'Episode %s: total_steps = %s' % (episode+1, step_counter)
         print('\r{}'.format(interaction), end='')
@@ -66,21 +66,21 @@ def update_enviroment(S, episode, step_counter):   # перерисовка "острова"
  
  
 def reinforsment_learning():
-    q_table = build_q_table(N_STATES, ACTIONS)
+    q_table = build_q_table(N_Stapes, ACTIONS)
     for episode in range(MAX_EPISODES):
         step_counter = 0
         S = FIRST_STATE
         is_terminated = False
         update_enviroment(S, episode, step_counter)
         while is_terminated == False:
-            A = choose_action(S, q_table)                    # выбрали действие в соответствующем стейте
-            S_, R = get_env_feedback(S, A)                   #  получили отзыв среды на это действие (следующее действие и награду)
-            q_predict = q_table.ix[S, A]                     #  существующее значение ценности действия из существующей таблицы
+            A = choose_action(S, q_table)                    # ГўГ»ГЎГ°Г Г«ГЁ Г¤ГҐГ©Г±ГІГўГЁГҐ Гў Г±Г®Г®ГІГўГҐГІГ±ГІГўГіГѕГ№ГҐГ¬ Г±ГІГҐГ©ГІГҐ
+            S_, R = get_env_feedback(S, A)                   #  ГЇГ®Г«ГіГ·ГЁГ«ГЁ Г®ГІГ§Г»Гў Г±Г°ГҐГ¤Г» Г­Г  ГЅГІГ® Г¤ГҐГ©Г±ГІГўГЁГҐ (Г±Г«ГҐГ¤ГіГѕГ№ГҐГҐ Г¤ГҐГ©Г±ГІГўГЁГҐ ГЁ Г­Г ГЈГ°Г Г¤Гі)
+            q_predict = q_table.ix[S, A]                     #  Г±ГіГ№ГҐГ±ГІГўГіГѕГ№ГҐГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ Г¶ГҐГ­Г­Г®Г±ГІГЁ Г¤ГҐГ©Г±ГІГўГЁГї ГЁГ§ Г±ГіГ№ГҐГ±ГІГўГіГѕГ№ГҐГ© ГІГ ГЎГ«ГЁГ¶Г»
             if S_ != 'terminal' and S_ != 'abyss':
  
-                # изменение весов таблицы:
-                if A == 'right': # для того чтобы веса изменялись с учетом того что справа - сокровища, слева - пропасть
-                    q_target = R + GAMMA * q_table.iloc[S_, :].max()  # полученная ценность действия равна награде + максимальное значение ценности действия в следующем стейте!!!!!????
+                # ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГҐ ГўГҐГ±Г®Гў ГІГ ГЎГ«ГЁГ¶Г»:
+                if A == 'right': # Г¤Г«Гї ГІГ®ГЈГ® Г·ГІГ®ГЎГ» ГўГҐГ±Г  ГЁГ§Г¬ГҐГ­ГїГ«ГЁГ±Гј Г± ГіГ·ГҐГІГ®Г¬ ГІГ®ГЈГ® Г·ГІГ® Г±ГЇГ°Г ГўГ  - Г±Г®ГЄГ°Г®ГўГЁГ№Г , Г±Г«ГҐГўГ  - ГЇГ°Г®ГЇГ Г±ГІГј
+                    q_target = R + GAMMA * q_table.iloc[S_, :].max()  # ГЇГ®Г«ГіГ·ГҐГ­Г­Г Гї Г¶ГҐГ­Г­Г®Г±ГІГј Г¤ГҐГ©Г±ГІГўГЁГї Г°Г ГўГ­Г  Г­Г ГЈГ°Г Г¤ГҐ + Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г®ГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ Г¶ГҐГ­Г­Г®Г±ГІГЁ Г¤ГҐГ©Г±ГІГўГЁГї Гў Г±Г«ГҐГ¤ГіГѕГ№ГҐГ¬ Г±ГІГҐГ©ГІГҐ!!!!!????
                 else:
                     q_target = R + GAMMA * q_table.iloc[S_, :].min()
  
